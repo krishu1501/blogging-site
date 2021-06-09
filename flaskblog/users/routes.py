@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from flask_login import login_user, logout_user, current_user, login_required
 from flaskblog import db, bcrypt
-from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, ResetRequestForm, ResetPasswordForm
+from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, ResetRequestForm, ResetPasswordForm, ChangePasswordForm
 from flaskblog.models import User, Post
 from flaskblog.users.utils import save_picture, send_reset_email
 
@@ -52,7 +52,9 @@ def logout():
 @login_required
 def account():
     form = UpdateAccountForm()
-    if form.validate_on_submit():
+    password_form = ChangePasswordForm()
+    formid = request.args.get('formid',1,type=int)
+    if form.validate_on_submit() and formid==1:
         if form.picture.data:
             picture_fn = save_picture(form.picture.data)
             current_user.image_file = picture_fn
@@ -61,11 +63,20 @@ def account():
         db.session.commit()
         flash('Your details were updated!','success')
         return redirect(url_for('users.account'))
+    elif password_form.validate_on_submit() and formid==2:
+        if bcrypt.check_password_hash(current_user.password, password_form.current_password.data):
+            hashed_password = bcrypt.generate_password_hash(password_form.new_password.data).decode('utf-8')
+            current_user.password = hashed_password
+            db.session.commit()
+            flash('Password updated successfully!','success')
+        else:
+            flash('Current password entered is incorrect!','danger')
+        return redirect(url_for('users.account'))
     if request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static',filename='profile_pics/'+current_user.image_file)
-    return render_template('account.html', title='Account', image_file=image_file, form=form)
+    return render_template('account.html', title='Account', image_file=image_file, form=form, password_form=password_form)
 
 @users.route("/user/<string:username>")
 def user_posts(username):

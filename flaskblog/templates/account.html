@@ -2,55 +2,104 @@
 {% block content %}
     <div class="content-section">
         <div class="media">
-        <img class="rounded-circle account-img" src="{{ image_file }}">
-        <div class="media-body">
-            <h2 class="account-heading">{{ current_user.username }}</h2>
-            <p class="text-secondary">{{ current_user.email }}</p>
+            <img class="rounded-circle account-img" src="{{ image_file }}">
+            <div class="media-body">
+                <h2 class="account-heading">{{ current_user.username }}</h2>
+                <p class="text-secondary">{{ current_user.email }}</p>
+            </div>
         </div>
-        </div>
-            <form method="POST" action="" enctype='multipart/form-data'>
-                {{ form.hidden_tag() }}
-                <fieldset class="form-group">
-                    <legend class="border-bottom mb-4">Account info</legend>
-                    <div class="form-group mb-3">
-                        {{ form.username.label(class="form-control-label") }}
-                        {% if form.username.errors %}
-                            {{ form.username(class="form-control form-control-lg is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in form.username.errors %}
-                                    <span>{{error}}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ form.username(class="form-control form-control-lg") }}
-                        {% endif %}
-                    </div>
-                    <div class="form-group mb-3">
-                        {{ form.email.label(class="form-control-label") }}
-                        {% if form.email.errors %}
-                            {{ form.email(class="form-control form-control-lg is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in form.email.errors %}
-                                    <span>{{error}}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ form.email(class="form-control form-control-lg") }}
-                        {% endif %}
-                    </div>
-                    <div class="form-group mb-3">
-                        {{ form.picture.label() }}<br>  
-                        {{ form.picture(class="form-control-file") }}<br>
-                        {% if form.picture.errors %}
-                            {% for error in form.picture.errors %}
-                                <span class="text-danger">{{ error }}</span></br>
+        <form method="POST" action="{{ url_for('users.account',formid=1) }}" enctype='multipart/form-data'>
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Account info</legend>
+                <div class="form-group mb-3">
+                    {{ form.username.label(class="form-control-label") }}
+                    {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                                <span>{{error}}</span>
                             {% endfor %}
-                        {% endif %}
-                    </div>
-                </fieldset>
-                <div class="form-group">
-                    {{ form.submit(class="btn btn-outline-info ") }}
+                        </div>
+                    {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                    {% endif %}
                 </div>
-            </form>
+                <div class="form-group mb-3">
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group mb-3">
+                    {{ form.picture.label() }}<br>  
+                    {{ form.picture(class="form-control-file") }}
+                    {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                            <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info ") }}
+            </div>
+        </form>
+        <br>
+        <form method="POST" action="{{ url_for('users.account',formid=2) }}">
+            {{ password_form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Change Password</legend>
+                <div class="form-group mb-3">
+                    {{ password_form.current_password.label(class="form-control-label") }}
+                    {% if password_form.current_password.errors %}
+                        {{ password_form.current_password(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in password_form.current_password.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ password_form.current_password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group mb-3">
+                    {{ password_form.new_password.label(class="form-control-label") }}
+                    {% if password_form.new_password.errors %}
+                        {{ password_form.new_password(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in password_form.new_password.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ password_form.new_password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group mb-3">
+                    {{ password_form.confirm_new_password.label(class="form-control-label") }}
+                    {% if password_form.confirm_new_password.errors %}
+                        {{ password_form.confirm_new_password(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in password_form.confirm_new_password.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ password_form.confirm_new_password(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ password_form.submit(class="btn btn-outline-info ") }}
+            </div>
+        </form>
     </div>
 {% endblock content %}
