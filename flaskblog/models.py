@@ -10,11 +10,16 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), unique=True, nullable=False)
+    username = db.Column(db.String(25), unique=True, nullable=False)
+    full_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
-    password = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.String(60), nullable=True)
+    image_file = db.Column(db.String(100), nullable=False, default='default.jpg')
+    avatar_link = db.Column(db.String(200), nullable=True)
+    tokens = db.Column(db.Text)
+    login_using = db.Column(db.String(20), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
+
 
     def get_reset_token(self,expires_sec=1800):
         s = Serializer(current_app.config['SECRET_KEY'], expires_sec)

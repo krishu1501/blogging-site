@@ -1,5 +1,14 @@
 import os
 
+class Auth:
+    CLIENT_ID = os.environ.get('CLIENT_ID')
+    CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+    REDIRECT_URI = os.environ.get('REDIRECT_URI')
+    SCOPE = ['https://www.googleapis.com/auth/userinfo.profile','https://www.googleapis.com/auth/userinfo.email']
+    AUTH_URI = 'https://accounts.google.com/o/oauth2/auth'
+    TOKEN_URI = 'https://oauth2.googleapis.com/token'
+    USER_INFO = 'https://www.googleapis.com/userinfo/v2/me'
+
 class Config:
     SECRET_KEY = 'a33513838c99d7653d18890b97824e81'
     MAIL_SERVER = 'smtp.googlemail.com'

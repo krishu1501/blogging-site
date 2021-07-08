@@ -1,9 +1,11 @@
-from flask import Blueprint, render_template, url_for, flash, redirect, request
+import json
+from flask import Blueprint, render_template, url_for, flash, redirect, request, session
 from flask_login import login_user, logout_user, current_user, login_required
 from flaskblog import db, bcrypt
 from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm, ResetRequestForm, ResetPasswordForm, ChangePasswordForm
 from flaskblog.models import User, Post
-from flaskblog.users.utils import save_picture, send_reset_email
+from flaskblog.users.utils import get_google_auth, save_picture, send_reset_email, username_from_email, save_picture_from_url
+from flaskblog.config import Auth
 
 
 users = Blueprint('users', __name__)
@@ -15,21 +17,28 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data,email=form.email.data,password=hashed_password)
+        user = User(full_name=form.full_name.data,username=form.username.data,email=form.email.data,password=hashed_password,login_using='mysite')
         db.session.add(user)
         db.session.commit()
-        flash(f'Account created for {form.username.data}!','success')
-        return redirect(url_for('users.login'))
+        login_user(user)
+        flash(f'Welcome, {user.username}.','success')
+        next_page = request.args.get('next')
+        return redirect(next_page) if next_page else redirect(url_for('main.home'))
     return render_template('register.html', title="Sign Up", form=form)
 
+@users.route("/login/<prompt>")
 @users.route("/login",methods=['GET','POST'])
-def login():
+def login(prompt=None):
     if current_user.is_authenticated:
         return redirect(url_for('main.home'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        if user:
+        if user is None:
+            flash('Invalid Password','danger')
+        elif user.login_using!='mysite':
+            flash(f'You have used {user.login_using} to login before. Please use the same to login!','danger')
+        else:
             if bcrypt.check_password_hash(user.password,form.password.data):
                 login_user(user, remember=form.remember.data)
                 flash(f'Welcome {user.username}. You are now logged in.','success')
@@ -37,9 +46,69 @@ def login():
                 return redirect(next_page) if next_page else redirect(url_for('main.home'))
             else:
                 flash('Invalid Password','danger')
+    oauth = get_google_auth()
+    auth_url, state = oauth.authorization_url(Auth.AUTH_URI, access_type='offline', prompt=prompt)
+    session['oauth_state'] = state
+    return render_template('login.html', title="Login", form=form, auth_url=auth_url)
+
+@users.route("/oauth2callback")
+def callback():
+    if current_user is not None and current_user.is_authenticated:
+        return redirect(url_for('main.home'))
+    if 'error' in request.args:
+        if request.args.get('error') == 'access_denied':
+            flash('You denied access.','danger')
         else:
-            flash('User is not registerd.','danger')
-    return render_template('login.html', title="Login", form=form)
+            flash('Error occured','danger')
+        return redirect(url_for('users.login'))
+    if 'code' not in request.args or 'state' not in request.args:
+        flash('Error Occurred! Please try again.')
+        return redirect(url_for('users.login'))
+    else:
+        print()
+        print('code: ', request.args.get('code'))
+        print('request.url: ',request.url)
+        print()
+
+    oauth = get_google_auth(state=session['oauth_state'])
+    try:
+        token = oauth.fetch_token(Auth.TOKEN_URI, client_secret=Auth.CLIENT_SECRET, authorization_response=request.url)
+    except Exception as e:
+        print("Error: ", e)
+        flash('Error Occurred while getting access token','danger')
+        return redirect(url_for('users.login'))
+    resp = oauth.get(Auth.USER_INFO)
+    if resp.status_code == 200:
+        user_data = resp.json()
+        email = user_data['email']
+        print()
+        print(user_data)
+        print('Name: ',user_data['name'])
+        print('Email: ',user_data['email'])
+        print('Picture link: ',user_data['picture'])
+        print()
+        
+        user = User.query.filter_by(email=email).first()
+        if user is not None:
+            flash(f'Welcome back, {user.username}.','success')
+            user.login_using = 'Google'
+        else:
+            user = User()
+            user.username = username_from_email(email,User)
+            user.full_name = user_data['name']
+            user.email = email
+            user.avatar_link = user_data['picture']
+            user.image_file = save_picture_from_url(user_data['picture'])
+            user.tokens = json.dumps(token)
+            user.login_using = 'Google'
+            flash(f'Welcome, {user.username}.','success')
+        db.session.add(user)
+        db.session.commit()
+        login_user(user)
+        return redirect(url_for('main.home'))       
+    else:
+        flash('Could not fetch your information','danger')
+        return redirect(url_for('users.login'))
 
 @users.route("/logout")
 def logout():
@@ -58,13 +127,16 @@ def account():
         if form.picture.data:
             picture_fn = save_picture(form.picture.data)
             current_user.image_file = picture_fn
+        current_user.full_name = form.full_name.data
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
         flash('Your details were updated!','success')
         return redirect(url_for('users.account'))
     elif password_form.validate_on_submit() and formid==2:
-        if bcrypt.check_password_hash(current_user.password, password_form.current_password.data):
+        if current_user.login_using!='mysite':
+            flash(f'You have used {user.login_using} to login. Password was not used.','info')
+        elif bcrypt.check_password_hash(current_user.password, password_form.current_password.data):
             hashed_password = bcrypt.generate_password_hash(password_form.new_password.data).decode('utf-8')
             current_user.password = hashed_password
             db.session.commit()
@@ -74,6 +146,7 @@ def account():
         return redirect(url_for('users.account'))
     if request.method == 'GET':
         form.username.data = current_user.username
+        form.full_name.data = current_user.full_name
         form.email.data = current_user.email
     image_file = url_for('static',filename='profile_pics/'+current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form, password_form=password_form)
