@@ -1,8 +1,17 @@
-REDIRECT_URI=
-CLIENT_ID=
-CLIENT_SECRET=
-FLASKBLOG_EMAIL_USER={email_id}
-FLASKBLOG_EMAIL_PASS={email_password}
+REDIRECT_URI : ""
+CLIENT_ID : ""
+CLIENT_SECRET : ""
+FLASKBLOG_EMAIL_USER : {email_id}
+FLASKBLOG_EMAIL_PASS : {email_password}
 
 --for http instead of https--
 OAUTHLIB_INSECURE_TRANSPORT=1
+
+--for prod config--
+
+RDS_USERNAME :
+RDS_PASSWORD :
+RDS_HOSTNAME :
+RDS_PORT :
+RDS_DB_NAME :
+

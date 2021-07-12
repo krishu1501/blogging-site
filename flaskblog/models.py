@@ -9,6 +9,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 class User(db.Model, UserMixin):
+    __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True, nullable=False)
     full_name = db.Column(db.String(50), nullable=False)
@@ -38,6 +39,7 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}','{self.email}','{self.image_file}')"
 
 class Post(db.Model):
+    __tablename__ = "post"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

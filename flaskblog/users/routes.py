@@ -135,7 +135,7 @@ def account():
         return redirect(url_for('users.account'))
     elif password_form.validate_on_submit() and formid==2:
         if current_user.login_using!='mysite':
-            flash(f'You have used {user.login_using} to login. Password was not used.','info')
+            flash(f'You have used {current_user.login_using} to login. Password was not used.','info')
         elif bcrypt.check_password_hash(current_user.password, password_form.current_password.data):
             hashed_password = bcrypt.generate_password_hash(password_form.new_password.data).decode('utf-8')
             current_user.password = hashed_password
@@ -167,7 +167,11 @@ def request_reset_password():
     form = ResetRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
+        try:
+            send_reset_email(user)
+        except:
+            flash('This serice is currently unavailable','danger')
+            return redirect(url_for('users.request_reset_password'))
         flash('Instruction to reset password has been sent to your email.','info')
         return redirect(url_for('users.login'))
     return render_template('reset_request.html', title='Reset Password', form=form)
