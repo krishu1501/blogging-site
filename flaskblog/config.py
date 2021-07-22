@@ -10,6 +10,7 @@ class Auth:
     USER_INFO = 'https://www.googleapis.com/userinfo/v2/me'
 
 class Config:
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'a33513838c99d7653d18890b97824e81'
     MAIL_SERVER = 'smtp.googlemail.com'
     MAIL_PORT = 587

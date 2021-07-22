@@ -17,7 +17,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(full_name=form.full_name.data,username=form.username.data,email=form.email.data,password=hashed_password,login_using='mysite')
+        user = User(full_name=form.full_name.data,username=form.username.data,email=form.email.data,password=hashed_password,login_using='Password')
         db.session.add(user)
         db.session.commit()
         login_user(user)
@@ -36,7 +36,7 @@ def login(prompt=None):
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
             flash('Invalid Password','danger')
-        elif user.login_using!='mysite':
+        elif user.login_using!='Password':
             flash(f'You have used {user.login_using} to login before. Please use the same to login!','danger')
         else:
             if bcrypt.check_password_hash(user.password,form.password.data):
@@ -90,6 +90,9 @@ def callback():
         
         user = User.query.filter_by(email=email).first()
         if user is not None:
+            if user.login_using!='Google':
+                flash(f'You have not used Google to login before. Please use email and password to login!','danger')
+                return redirect(url_for('users.login'))
             flash(f'Welcome back, {user.username}.','success')
             user.login_using = 'Google'
         else:
@@ -114,7 +117,7 @@ def callback():
 def logout():
     if current_user.is_authenticated:
         flash('Logged out','success')
-    logout_user()
+        logout_user()
     return redirect(url_for('main.home'))
 
 @users.route("/account",methods=['GET','POST'])
@@ -134,7 +137,7 @@ def account():
         flash('Your details were updated!','success')
         return redirect(url_for('users.account'))
     elif password_form.validate_on_submit() and formid==2:
-        if current_user.login_using!='mysite':
+        if current_user.login_using!='Password':
             flash(f'You have used {current_user.login_using} to login. Password was not used.','info')
         elif bcrypt.check_password_hash(current_user.password, password_form.current_password.data):
             hashed_password = bcrypt.generate_password_hash(password_form.new_password.data).decode('utf-8')

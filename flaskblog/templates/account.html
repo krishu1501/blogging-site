@@ -66,53 +66,55 @@
             </div>
         </form>
         <br>
-        <form method="POST" action="{{ url_for('users.account',formid=2) }}">
-            {{ password_form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Change Password</legend>
-                <div class="form-group mb-3">
-                    {{ password_form.current_password.label(class="form-control-label") }}
-                    {% if password_form.current_password.errors %}
-                        {{ password_form.current_password(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in password_form.current_password.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ password_form.current_password(class="form-control form-control-lg") }}
-                    {% endif %}
+        {% if current_user.login_using=='Password' %}
+            <form method="POST" action="{{ url_for('users.account',formid=2) }}">
+                {{ password_form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">Change Password</legend>
+                    <div class="form-group mb-3">
+                        {{ password_form.current_password.label(class="form-control-label") }}
+                        {% if password_form.current_password.errors %}
+                            {{ password_form.current_password(class="form-control form-control-lg is-invalid")}}
+                            <div class="invalid-feedback">
+                                {% for error in password_form.current_password.errors %}
+                                    <span>{{error}}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ password_form.current_password(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ password_form.new_password.label(class="form-control-label") }}
+                        {% if password_form.new_password.errors %}
+                            {{ password_form.new_password(class="form-control form-control-lg is-invalid")}}
+                            <div class="invalid-feedback">
+                                {% for error in password_form.new_password.errors %}
+                                    <span>{{error}}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ password_form.new_password(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group mb-3">
+                        {{ password_form.confirm_new_password.label(class="form-control-label") }}
+                        {% if password_form.confirm_new_password.errors %}
+                            {{ password_form.confirm_new_password(class="form-control form-control-lg is-invalid")}}
+                            <div class="invalid-feedback">
+                                {% for error in password_form.confirm_new_password.errors %}
+                                    <span>{{error}}</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {{ password_form.confirm_new_password(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                </fieldset>
+                <div class="form-group">
+                    {{ password_form.submit(class="btn btn-outline-info ") }}
                 </div>
-                <div class="form-group mb-3">
-                    {{ password_form.new_password.label(class="form-control-label") }}
-                    {% if password_form.new_password.errors %}
-                        {{ password_form.new_password(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in password_form.new_password.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ password_form.new_password(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group mb-3">
-                    {{ password_form.confirm_new_password.label(class="form-control-label") }}
-                    {% if password_form.confirm_new_password.errors %}
-                        {{ password_form.confirm_new_password(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in password_form.confirm_new_password.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ password_form.confirm_new_password(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-            </fieldset>
-            <div class="form-group">
-                {{ password_form.submit(class="btn btn-outline-info ") }}
-            </div>
-        </form>
+            </form>
+        {% endif %}
     </div>
 {% endblock content %}

@@ -23,10 +23,10 @@ def save_picture(form_picture):
 
     return picture_fn
 
-def save_picture_from_url(url,f_ext='png'):
+def save_picture_from_url(url,f_ext='.png'):
     resp = requests.get(url)
     random_hex = secrets.token_hex()
-    picture_fn = random_hex + '.' + f_ext
+    picture_fn = random_hex + f_ext
     picture_path = os.path.join(current_app.root_path, 'static/profile_pics', picture_fn)
     file = open(picture_path,'wb')
     file.write(resp.content)
