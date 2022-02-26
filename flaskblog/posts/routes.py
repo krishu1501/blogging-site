@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request, abort
 from flask_login import current_user, login_required
 from flaskblog import db
-from flaskblog.models import Post
+from flaskblog.models import Comment, Post, Reaction
 from flaskblog.posts.forms import PostForm
 
 posts = Blueprint('posts', __name__)
@@ -15,6 +15,7 @@ def new_post():
     if form.validate_on_submit():
         post = Post(title=form.title.data,content=form.content.data,author=current_user)
         db.session.add(post)
+        current_user.posts_count += 1
         db.session.commit()
         flash('Posted on your blog.','success')
         return redirect(url_for('main.home'))
@@ -50,7 +51,93 @@ def delete_post(post_id):
     if post.author != current_user:
         abort(403)
     db.session.delete(post)
+    current_user.posts_count -= 1
     db.session.commit()
     flash('Your Post has been deleted.','success')
     return redirect(url_for('main.home'))
 
+# should the method be GET or POST
+@posts.route('/post/<int:post_id>/react_on_post/<int:has_liked_int>', methods=['GET'])
+@login_required
+def react_on_post(post_id, has_liked_int):
+    post = Post.query.get_or_404(post_id)
+    has_liked = False if has_liked_int==0 else True
+    # checking if user has already reacted on this post
+    reaction = Reaction.query.filter_by(post_id=post_id, on_post=True, user_id=current_user.get_id()).first()
+    
+    if reaction is None:
+        reaction = Reaction(on_post=True, has_liked=has_liked, user_id=current_user.get_id(), post_id=post_id)
+        if has_liked:
+            post.likes_count += 1
+        else:
+            post.dislikes_count += 1
+        db.session.add(reaction)
+    else:
+        if reaction.has_liked == True and has_liked == False:
+            post.likes_count -= 1
+            post.dislikes_count += 1
+            reaction.has_liked = has_liked
+        elif reaction.has_liked == False and has_liked == True:
+            post.dislikes_count -= 1
+            post.likes_count += 1
+            reaction.has_liked = has_liked
+        elif reaction.has_liked == True and has_liked == True:
+            post.likes_count -= 1
+            db.session.delete(reaction)
+        elif reaction.has_liked == False and has_liked == False:
+            post.dislikes_count -= 1
+            db.session.delete(reaction)
+    db.session.commit()
+    flash('Your reaction on post has been saved.','success')
+    return redirect(f'{request.referrer}#{post_id}')
+
+
+@posts.route('/post/<int:post_id>/comment/new', methods=['GET','POST'])
+@login_required
+def new_comment(post_id):
+    post = Post.query.get_or_404(post_id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(content=form.content.data, post_id=post_id, user_id=current_user.get_id())
+        post.comments_count += 1
+        db.session.add(comment)
+        flash('Successfully added your comment!','success')
+        return redirect(url_for('post.post',post_id=post_id))
+    return render_template('create_comment.html',title='Create Comment', legend='New Comment', form=form)
+
+
+# should the method be GET or POST
+@posts.route('/post/<int:post_id>/comment/<int:comment_id>/react_on_comment/<int:has_liked_int>', methods=['GET'])
+@login_required
+def react_on_comment(post_id, comment_id, has_liked_int):
+    comment = Comment.query.get_or_404(comment_id)
+    has_liked = False if has_liked_int==0 else True
+
+    # checking if user has already reacted on this comment
+    reaction = Reaction.query.filter_by(comment_id=comment_id, on_post=False, user_id=current_user.get_id()).first()
+    
+    if reaction is None:
+        reaction = Reaction(on_post=False, has_liked=has_liked, user_id=current_user.get_id(), comment_id=comment_id)
+        if has_liked:
+            comment.likes_count += 1
+        else:
+            comment.dislikes_count += 1
+        db.session.add(reaction)
+    else:
+        if reaction.has_liked == True and has_liked == False:
+            comment.likes_count -= 1
+            comment.dislikes_count += 1
+            reaction.has_liked = has_liked
+        elif reaction.has_liked == False and has_liked == True:
+            comment.dislikes_count -= 1
+            comment.likes_count += 1
+            reaction.has_liked = has_liked
+        elif reaction.has_liked == True and has_liked == True:
+            comment.likes_count -= 1
+            db.session.delete(reaction)
+        elif reaction.has_liked == False and has_liked == False:
+            comment.dislikes_count -= 1
+            db.session.delete(reaction)
+    db.session.commit()
+    flash('Your reaction on comment has been saved.','success')
+    return redirect(f'{request.referrer}#{post_id}')

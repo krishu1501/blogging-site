@@ -17,7 +17,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(full_name=form.full_name.data,username=form.username.data,email=form.email.data,password=hashed_password,login_using='Password')
+        user = User(first_name=form.first_name.data,last_name=form.last_name.data,username=form.username.data,email=form.email.data,password=hashed_password,login_using='Password')
         db.session.add(user)
         db.session.commit()
         login_user(user)
@@ -81,12 +81,12 @@ def callback():
     if resp.status_code == 200:
         user_data = resp.json()
         email = user_data['email']
-        print()
-        print(user_data)
-        print('Name: ',user_data['name'])
-        print('Email: ',user_data['email'])
-        print('Picture link: ',user_data['picture'])
-        print()
+        # print()
+        # print(user_data)
+        # print('Name: ',user_data['name'])
+        # print('Email: ',user_data['email'])
+        # print('Picture link: ',user_data['picture'])
+        # print()
         
         user = User.query.filter_by(email=email).first()
         if user is not None:
@@ -98,7 +98,8 @@ def callback():
         else:
             user = User()
             user.username = username_from_email(email,User)
-            user.full_name = user_data['name']
+            user.first_name = user_data['given_name']
+            user.last_name = user_data['family_name']
             user.email = email
             user.avatar_link = user_data['picture']
             user.image_file = save_picture_from_url(user_data['picture'])
@@ -130,9 +131,12 @@ def account():
         if form.picture.data:
             picture_fn = save_picture(form.picture.data)
             current_user.image_file = picture_fn
-        current_user.full_name = form.full_name.data
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
         current_user.username = form.username.data
         current_user.email = form.email.data
+        current_user.dob = form.dob.data
+        current_user.gender = form.gender.data
         db.session.commit()
         flash('Your details were updated!','success')
         return redirect(url_for('users.account'))
@@ -149,8 +153,12 @@ def account():
         return redirect(url_for('users.account'))
     if request.method == 'GET':
         form.username.data = current_user.username
-        form.full_name.data = current_user.full_name
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
         form.email.data = current_user.email
+        form.dob.data = current_user.dob
+        form.gender.data = current_user.gender
+        print('gender:',current_user.gender)
     image_file = url_for('static',filename='profile_pics/'+current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form, password_form=password_form)
 
@@ -159,7 +167,7 @@ def user_posts(username):
     page = request.args.get('page',1,type=int)
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(author=user)\
-        .order_by(Post.date_posted.desc())\
+        .order_by(Post.date_created.desc())\
         .paginate(per_page=5,page=page)
     return render_template('user_posts.html', posts=posts, user=user)
 

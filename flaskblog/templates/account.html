@@ -12,20 +12,33 @@
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">Account info</legend>
-                <div class="form-group mb-3">
-                    {{ form.full_name.label(class="form-control-label") }}
-                    {% if form.full_name.errors %}
-                        {{ form.full_name(class="form-control form-control-lg is-invalid")}}
+                <div class="form-group">
+                    {{ form.first_name.label(class="form-control-label") }}
+                    {% if form.first_name.errors %}
+                        {{ form.first_name(class="form-control form-control-lg is-invalid")}}
                         <div class="invalid-feedback">
-                            {% for error in form.full_name.errors %}
+                            {% for error in form.first_name.errors %}
                                 <span>{{error}}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.full_name(class="form-control form-control-lg") }}
+                        {{ form.first_name(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                <div class="form-group mb-3">
+                <div class="form-group">
+                    {{ form.last_name.label(class="form-control-label") }}
+                    {% if form.last_name.errors %}
+                        {{ form.last_name(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.last_name.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.last_name(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     {{ form.username.label(class="form-control-label") }}
                     {% if form.username.errors %}
                         {{ form.username(class="form-control form-control-lg is-invalid")}}
@@ -38,7 +51,7 @@
                         {{ form.username(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                <div class="form-group mb-3">
+                <div class="form-group">
                     {{ form.email.label(class="form-control-label") }}
                     {% if form.email.errors %}
                         {{ form.email(class="form-control form-control-lg is-invalid")}}
@@ -51,7 +64,33 @@
                         {{ form.email(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                <div class="form-group mb-3">
+                <div class="form-group">
+                    {{ form.dob.label(class="form-control-label") }} (YYYY-MM-DD)
+                    {% if form.dob.errors %}
+                        {{ form.dob(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.dob.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.dob(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    {{ form.gender.label(class="form-control-label") }}
+                    {% if form.gender.errors %}
+                        {{ form.gender(class="form-control form-control-lg is-invalid")}}
+                        <div class="invalid-feedback">
+                            {% for error in form.gender.errors %}
+                                <span>{{error}}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.gender(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     {{ form.picture.label() }}<br>  
                     {{ form.picture(class="form-control-file") }}
                     {% if form.picture.errors %}
@@ -71,7 +110,7 @@
                 {{ password_form.hidden_tag() }}
                 <fieldset class="form-group">
                     <legend class="border-bottom mb-4">Change Password</legend>
-                    <div class="form-group mb-3">
+                    <div class="form-group">
                         {{ password_form.current_password.label(class="form-control-label") }}
                         {% if password_form.current_password.errors %}
                             {{ password_form.current_password(class="form-control form-control-lg is-invalid")}}
@@ -84,7 +123,7 @@
                             {{ password_form.current_password(class="form-control form-control-lg") }}
                         {% endif %}
                     </div>
-                    <div class="form-group mb-3">
+                    <div class="form-group">
                         {{ password_form.new_password.label(class="form-control-label") }}
                         {% if password_form.new_password.errors %}
                             {{ password_form.new_password(class="form-control form-control-lg is-invalid")}}
@@ -97,7 +136,7 @@
                             {{ password_form.new_password(class="form-control form-control-lg") }}
                         {% endif %}
                     </div>
-                    <div class="form-group mb-3">
+                    <div class="form-group">
                         {{ password_form.confirm_new_password.label(class="form-control-label") }}
                         {% if password_form.confirm_new_password.errors %}
                             {{ password_form.confirm_new_password(class="form-control form-control-lg is-invalid")}}
