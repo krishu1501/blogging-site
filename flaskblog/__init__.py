@@ -15,7 +15,7 @@ mail = Mail()
 
 
 
-def create_app(config_class=config_for['prod']):
+def create_app(config_class=config_for['dev']):
     app = Flask(__name__)
     app.config.from_object(config_class)
 

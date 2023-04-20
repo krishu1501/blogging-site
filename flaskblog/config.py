@@ -29,7 +29,8 @@ class ProdConfig(Config):
         port = os.environ['RDS_PORT']
         database = os.environ['RDS_DB_NAME']
         SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}'
-    except:
+    except Exception as e:
+        print(e)
         print('Exception handled in ProdConfig. Prod variables not defined!')
 
 config_for = {
