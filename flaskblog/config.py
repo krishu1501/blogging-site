@@ -22,16 +22,7 @@ class DevConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///site.db'
 
 class ProdConfig(Config):
-    try:
-        username = os.environ['RDS_USERNAME']
-        password = os.environ['RDS_PASSWORD']
-        host = os.environ['RDS_HOSTNAME']
-        port = os.environ['RDS_PORT']
-        database = os.environ['RDS_DB_NAME']
-        SQLALCHEMY_DATABASE_URI = f'mysql+pymysql://{username}:{password}@{host}:{port}/{database}'
-    except Exception as e:
-        print(e)
-        print('Exception handled in ProdConfig. Prod variables not defined!')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 
 config_for = {
     "dev":DevConfig,
