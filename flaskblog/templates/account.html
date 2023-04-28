@@ -1,159 +1,185 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div class="content-section">
-        <div class="media">
-            <img class="rounded-circle account-img" src="{{ image_file }}">
-            <div class="media-body">
-                <h2 class="account-heading">{{ current_user.username }}</h2>
-                <p class="text-secondary">{{ current_user.email }}</p>
-            </div>
+<div class="content-section">
+    <div class="media">
+        <img id="profile-pic" class="rounded-circle account-img img-thumbnail" src="{{ image_file }}">
+        <div class="media-body">
+            <h2 class="account-heading">{{ current_user.username }}</h2>
+            <p class="text-secondary">{{ current_user.email }}</p>
         </div>
-        <form method="POST" action="{{ url_for('users.account',formid=1) }}" enctype='multipart/form-data'>
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Account info</legend>
-                <div class="form-group">
-                    {{ form.first_name.label(class="form-control-label") }}
-                    {% if form.first_name.errors %}
-                        {{ form.first_name(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.first_name.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.first_name(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.last_name.label(class="form-control-label") }}
-                    {% if form.last_name.errors %}
-                        {{ form.last_name(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.last_name.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.last_name(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.email.label(class="form-control-label") }}
-                    {% if form.email.errors %}
-                        {{ form.email(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.email.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.email(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.dob.label(class="form-control-label") }} (YYYY-MM-DD)
-                    {% if form.dob.errors %}
-                        {{ form.dob(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.dob.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.dob(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.gender.label(class="form-control-label") }}
-                    {% if form.gender.errors %}
-                        {{ form.gender(class="form-control form-control-lg is-invalid")}}
-                        <div class="invalid-feedback">
-                            {% for error in form.gender.errors %}
-                                <span>{{error}}</span>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        {{ form.gender(class="form-control form-control-lg") }}
-                    {% endif %}
-                </div>
-                <div class="form-group">
-                    {{ form.picture.label() }}<br>  
-                    {{ form.picture(class="form-control-file") }}
-                    {% if form.picture.errors %}
-                        {% for error in form.picture.errors %}
-                            <span class="text-danger">{{ error }}</span></br>
-                        {% endfor %}
-                    {% endif %}
-                </div>
-            </fieldset>
-            <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info ") }}
-            </div>
-        </form>
-        <br>
-        {% if current_user.login_using=='Password' %}
-            <form method="POST" action="{{ url_for('users.account',formid=2) }}">
-                {{ password_form.hidden_tag() }}
-                <fieldset class="form-group">
-                    <legend class="border-bottom mb-4">Change Password</legend>
-                    <div class="form-group">
-                        {{ password_form.current_password.label(class="form-control-label") }}
-                        {% if password_form.current_password.errors %}
-                            {{ password_form.current_password(class="form-control form-control-lg is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in password_form.current_password.errors %}
-                                    <span>{{error}}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ password_form.current_password(class="form-control form-control-lg") }}
-                        {% endif %}
-                    </div>
-                    <div class="form-group">
-                        {{ password_form.new_password.label(class="form-control-label") }}
-                        {% if password_form.new_password.errors %}
-                            {{ password_form.new_password(class="form-control form-control-lg is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in password_form.new_password.errors %}
-                                    <span>{{error}}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ password_form.new_password(class="form-control form-control-lg") }}
-                        {% endif %}
-                    </div>
-                    <div class="form-group">
-                        {{ password_form.confirm_new_password.label(class="form-control-label") }}
-                        {% if password_form.confirm_new_password.errors %}
-                            {{ password_form.confirm_new_password(class="form-control form-control-lg is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in password_form.confirm_new_password.errors %}
-                                    <span>{{error}}</span>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            {{ password_form.confirm_new_password(class="form-control form-control-lg") }}
-                        {% endif %}
-                    </div>
-                </fieldset>
-                <div class="form-group">
-                    {{ password_form.submit(class="btn btn-outline-info ") }}
-                </div>
-            </form>
-        {% endif %}
     </div>
+    <form method="POST" action="{{ url_for('users.account',formid=1) }}" enctype='multipart/form-data'>
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Account info</legend>
+            <div class="form-group">
+                <a class="btn btn-sm btn-outline-info mb-2" onclick="toggle_image_change_section('{{ image_file }}')">Change profile pic</a>
+                <div id="image-change-section" hidden>
+                    <div id="select-from-profile-pics">
+                        {{ form.predef_picture.label() }}<br>
+                        {{ form.predef_picture(class="form-control-file", hidden=true) }}
+                        {% for filename in profile_pics_paths %}
+                        <img class="rounded-circle article-img " src="{{ profile_pics_paths[filename] }}"
+                            onclick="preview_pic('{{ filename }}', '{{ profile_pics_paths[filename] }}')">
+                        {% endfor %}
+                        {% if form.predef_picture.errors %}
+                        {% for error in form.predef_picture.errors %}
+                        <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                        {% endif %}
+                        <br>
+                        <p class="mt-3">OR <a class="btn btn-sm btn-outline-info" onclick="toggle_image_change_option('{{ image_file }}')">Upload profile pic</a>
+                        </p>
+
+                    </div>
+                    <div id="upload-profile-pic" hidden>
+                        {{ form.picture.label() }}<br>
+                        {{ form.picture(class="form-control-file btn-lg") }}
+                        {% if form.picture.errors %}
+                        {% for error in form.picture.errors %}
+                        <span class="text-danger">{{ error }}</span></br>
+                        {% endfor %}
+                        {% endif %}
+                        <br>
+                        <p>OR <a class="btn btn-sm btn-outline-info" onclick="toggle_image_change_option('{{ image_file }}')">Choose from profile pics</a></p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form.first_name.label(class="form-control-label") }}
+                {% if form.first_name.errors %}
+                {{ form.first_name(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in form.first_name.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.first_name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.last_name.label(class="form-control-label") }}
+                {% if form.last_name.errors %}
+                {{ form.last_name(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in form.last_name.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.last_name(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.username.label(class="form-control-label") }}
+                {% if form.username.errors %}
+                {{ form.username(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.username(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.dob.label(class="form-control-label") }} (YYYY-MM-DD)
+                {% if form.dob.errors %}
+                {{ form.dob(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in form.dob.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.dob(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.gender.label(class="form-control-label") }}
+                {% if form.gender.errors %}
+                {{ form.gender(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in form.gender.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.gender(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info ") }}
+        </div>
+    </form>
+    <br>
+    {% if current_user.login_using=='Password' %}
+    <form method="POST" action="{{ url_for('users.account',formid=2) }}">
+        {{ password_form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Change Password</legend>
+            <div class="form-group">
+                {{ password_form.current_password.label(class="form-control-label") }}
+                {% if password_form.current_password.errors %}
+                {{ password_form.current_password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in password_form.current_password.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ password_form.current_password(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ password_form.new_password.label(class="form-control-label") }}
+                {% if password_form.new_password.errors %}
+                {{ password_form.new_password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in password_form.new_password.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ password_form.new_password(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ password_form.confirm_new_password.label(class="form-control-label") }}
+                {% if password_form.confirm_new_password.errors %}
+                {{ password_form.confirm_new_password(class="form-control form-control-lg is-invalid")}}
+                <div class="invalid-feedback">
+                    {% for error in password_form.confirm_new_password.errors %}
+                    <span>{{error}}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ password_form.confirm_new_password(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ password_form.submit(class="btn btn-outline-info ") }}
+        </div>
+    </form>
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/preview_profile_pic.js') }}"></script>
+</div>
 {% endblock content %}

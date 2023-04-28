@@ -39,7 +39,8 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email',validators=[DataRequired(), Email()])
     gender = SelectField('Gender',choices=[('F','Female'),('M','Male'),('Oth','Others'),('Null','Prefer not to say'),])
     dob = DateField('Date of Birth',default=date.today)
-    picture = FileField('Update Profile Picture',validators=[FileAllowed(['jpg','jpeg','png'])])
+    picture = FileField('Upload Profile Picture',validators=[FileAllowed(['jpg','jpeg','png'])])
+    predef_picture = StringField('Choose Profile Picture')
     submit = SubmitField('Update')
 
     def validate_username(self,username):

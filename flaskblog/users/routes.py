@@ -6,6 +6,7 @@ from flaskblog.users.forms import RegistrationForm, LoginForm, UpdateAccountForm
 from flaskblog.models import User, Post
 from flaskblog.users.utils import get_google_auth, save_picture, send_reset_email, username_from_email, save_picture_from_url
 from flaskblog.config import Auth
+from flaskblog.reference import profile_pics_predef
 
 
 users = Blueprint('users', __name__)
@@ -131,6 +132,8 @@ def account():
         if form.picture.data:
             picture_fn = save_picture(form.picture.data)
             current_user.image_file = picture_fn
+        elif form.predef_picture.data in profile_pics_predef:
+            current_user.image_file = form.predef_picture.data
         current_user.first_name = form.first_name.data
         current_user.last_name = form.last_name.data
         current_user.username = form.username.data
@@ -158,9 +161,11 @@ def account():
         form.email.data = current_user.email
         form.dob.data = current_user.dob
         form.gender.data = current_user.gender
-        print('gender:',current_user.gender)
     image_file = url_for('static',filename='profile_pics/'+current_user.image_file)
-    return render_template('account.html', title='Account', image_file=image_file, form=form, password_form=password_form)
+    profile_pics_paths = {}
+    for name in profile_pics_predef:
+        profile_pics_paths[name] = url_for('static', filename='profile_pics/'+name)
+    return render_template('account.html', title='Account', image_file=image_file, profile_pics_paths=profile_pics_paths, form=form, password_form=password_form)
 
 @users.route("/user/<string:username>")
 def user_posts(username):

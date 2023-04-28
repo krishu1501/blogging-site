@@ -1,0 +1,1 @@
+profile_pics_predef = ['default.jpg','pic1.png','pic2.png','pic3.jpg','pic4.jpg','pic5.jpg','pic6.jpg','fashion-boy-with-yellow-jacket-blue-pants.jpg','fun-3d-cartoon-casual-character-woman.jpg']
