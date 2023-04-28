@@ -1,0 +1,27 @@
+<article class="media content-section" id="post-{{ post.id }}">
+    <img class="rounded-circle article-img"
+        src="{{ url_for('static',filename='profile_pics/'+post.author.image_file) }}">
+    <div class="media-body">
+        <div class="article-metadata">
+            <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{
+                post.author.username
+                }}</a>
+            <small class="text-muted">{{ post.date_created.strftime('%Y-%m-%d') }}</small>
+
+            {% block editButtons %}{% endblock editButtons %}
+
+        </div>
+        <h2 class="article-title"><a class="article-title" href="{{ url_for('posts.post',post_id=post.id) }}">{{ post.title }}</a></h2>
+        <p class="article-content">{{ post.content }}</p>
+
+        <div class="reactions">
+            <div class="btn-group mb-1" role="group">
+                <a title="Like" href="{{ url_for('posts.react_on_post',post_id=post.id,has_liked_int=1) }}"
+                    class="btn btn-outline-info"><span class="likes-count">{{ post.likes_count }}</span> 👍 </a>
+                <a title="Dislike" href="{{ url_for('posts.react_on_post',post_id=post.id,has_liked_int=0) }}"
+                    class="btn btn-outline-info"><span class="dislikes-count">{{ post.dislikes_count }}</span> 👎 </a>
+            </div>
+        </div>
+
+    </div>
+</article>

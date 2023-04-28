@@ -1,0 +1,9 @@
+{% extends "post_template.html" %}
+{% block editButtons %}
+{% if post.author == current_user %}
+<div>
+  <a href="{{ url_for('posts.update_post', post_id=post.id) }}" class="btn btn-secondary btn-sm mt-1 mb-1">Update</a>
+  <button type="button" class="btn btn-danger btn-sm m-1" data-toggle="modal" data-target="#deleteModal">Delete</button>
+</div>
+{% endif %}
+{% endblock editButtons %}

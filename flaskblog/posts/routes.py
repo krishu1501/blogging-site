@@ -89,7 +89,7 @@ def react_on_post(post_id, has_liked_int):
             db.session.delete(reaction)
     db.session.commit()
     flash('Your reaction on post has been saved.','success')
-    return redirect(f'{request.referrer}#{post_id}')
+    return redirect(f'{request.referrer}#post-{post_id}')
 
 
 @posts.route('/post/<int:post_id>/comment/new', methods=['GET','POST'])
@@ -140,4 +140,4 @@ def react_on_comment(post_id, comment_id, has_liked_int):
             db.session.delete(reaction)
     db.session.commit()
     flash('Your reaction on comment has been saved.','success')
-    return redirect(f'{request.referrer}#{post_id}')
+    return redirect(f'{request.referrer}post-#{post_id}')
