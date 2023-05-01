@@ -7,6 +7,7 @@ from flaskblog.models import User, Post
 from flaskblog.users.utils import get_google_auth, save_picture, send_reset_email, username_from_email, save_picture_from_url
 from flaskblog.config import Auth
 from flaskblog.reference import profile_pics_predef
+from flaskblog.posts.routes import has_user_liked_posts
 
 
 users = Blueprint('users', __name__)
@@ -82,12 +83,6 @@ def callback():
     if resp.status_code == 200:
         user_data = resp.json()
         email = user_data['email']
-        # print()
-        # print(user_data)
-        # print('Name: ',user_data['name'])
-        # print('Email: ',user_data['email'])
-        # print('Picture link: ',user_data['picture'])
-        # print()
         
         user = User.query.filter_by(email=email).first()
         if user is not None:
@@ -174,7 +169,8 @@ def user_posts(username):
     posts = Post.query.filter_by(author=user)\
         .order_by(Post.date_created.desc())\
         .paginate(per_page=5,page=page)
-    return render_template('user_posts.html', posts=posts, user=user)
+    has_liked_posts = has_user_liked_posts(current_user.id, list(map(lambda post: post.id, posts.items))) if current_user.is_authenticated else {}
+    return render_template('user_posts.html', posts=posts, user=user, has_liked_posts=has_liked_posts)
 
 @users.route("/reset_password", methods=['GET','POST'])
 def request_reset_password():

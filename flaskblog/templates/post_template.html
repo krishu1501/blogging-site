@@ -13,15 +13,15 @@
         </div>
         <h2 class="article-title"><a class="article-title" href="{{ url_for('posts.post',post_id=post.id) }}">{{ post.title }}</a></h2>
         <p class="article-content">{{ post.content }}</p>
-
         <div class="reactions">
             <div class="btn-group mb-1" role="group">
-                <a title="Like" href="{{ url_for('posts.react_on_post',post_id=post.id,has_liked_int=1) }}"
-                    class="btn btn-outline-info"><span class="likes-count">{{ post.likes_count }}</span> 👍 </a>
-                <a title="Dislike" href="{{ url_for('posts.react_on_post',post_id=post.id,has_liked_int=0) }}"
-                    class="btn btn-outline-info"><span class="dislikes-count">{{ post.dislikes_count }}</span> 👎 </a>
+                <button title="Like" onclick="reactOnPost(`{{url_for('posts.react_on_post_api')}}`,{{post.id}}, true, `{{ url_for('users.login') }}`, {% if current_user.is_authenticated %} true {% else %} false {% endif %})"
+                    class="btn {% if has_liked %}btn-primary{% endif %}"><span class="likes-count">{{ post.likes_count }}</span> 👍 </button>
+                <button title="Dislike" onclick="reactOnPost(`{{url_for('posts.react_on_post_api')}}`,{{post.id}}, false, `{{ url_for('users.login') }}`, {% if current_user.is_authenticated %} true {% else %} false {% endif %})"
+                    class="btn {% if has_liked==False %}btn-primary{% endif %}"><span class="dislikes-count">{{ post.dislikes_count }}</span> 👎 </button>
             </div>
         </div>
 
     </div>
 </article>
+<script src="{{ url_for('static',filename='js/post_reactions.js') }}"></script>
